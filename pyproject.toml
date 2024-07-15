@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "project-delfos"
+version = "0.1.0"
+description = ""
+authors = ["alfmorais <alfredneto@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.111.1"
+pydantic-settings = "^2.3.4"
+pydantic = "^2.8.2"
+sqlalchemy = "^2.0.31"
+alembic = "^1.13.2"
+psycopg = "^3.2.1"
+psycopg-binary = "^3.2.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.5.2"
+ipdb = "^0.13.13"
+taskipy = "^1.13.0"
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+preview = true
+select = ["I", "F", "E", "W", "PL", "PT"]
+
+[tool.ruff.format]
+preview = true
+quote-style = "double"
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = "-p no:warnings"
+asyncio_mode = "auto"
+
+[tool.taskipy.tasks]
+lint = "ruff check . && ruff check . --diff"
+format = "ruff check . --fix && ruff format ."
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
