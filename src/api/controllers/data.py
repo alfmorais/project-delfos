@@ -6,7 +6,6 @@ from typing import Dict, List
 from fastapi import HTTPException
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
-from sqlalchemy import text
 
 from src.api.models import Data
 from src.api.schemas import DataBulkPayload, DataParams, DataPayload
@@ -42,7 +41,12 @@ class DataController:
     def read(self, params: DataParams, session: Session) -> List[Data]:
         query = (
             session.query(self.model)
-            .filter(and_(self.model.timestamp >= params.start_time, self.model.timestamp <= params.end_time))
+            .filter(
+                and_(
+                    self.model.timestamp >= params.start_time,
+                    self.model.timestamp <= params.end_time,
+                )
+            )
             .all()
         )
 
