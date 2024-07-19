@@ -54,7 +54,7 @@ def test_insert_duplicate_id(session):
 
 
 @pytest.mark.parametrize(
-    "data,expected_exception,description_exception",
+    "data,expected_exception,expected_description_exception",
     [
         (
             Data(
@@ -90,14 +90,14 @@ def test_data_integrity(
     session,
     data,
     expected_exception,
-    description_exception,
+    expected_description_exception,
 ):
     session.add(data)
 
     with pytest.raises(expected_exception) as error:
         session.commit()
 
-    assert error.typename == description_exception
+    assert error.typename == expected_description_exception
     assert issubclass(error.type, expected_exception)
 
     session.rollback()
