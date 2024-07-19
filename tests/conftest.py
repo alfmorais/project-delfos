@@ -8,6 +8,7 @@ from testcontainers.postgres import PostgresContainer
 
 from src.api import app
 from src.infrastructure.database import Base, get_session
+from tests.factories import DataFactory
 
 
 @pytest.fixture(scope="module")
@@ -44,3 +45,12 @@ def session(engine) -> Generator:
     finally:
         session.close()
         Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def data_instance(session):
+    data = DataFactory()
+    session.add(data)
+    session.commit()
+    session.refresh(data)
+    return data

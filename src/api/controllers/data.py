@@ -39,17 +39,8 @@ class DataController:
         )
 
     def read(self, params: DataParams, session: Session) -> List[Data]:
-        if params.columns is None:
-            params.columns = [
-                "id",
-                "timestamp",
-                "wind_speed",
-                "power",
-                "ambient_temperature",
-            ]
-
         columns = [getattr(self.model, column) for column in params.columns]
-        statement = select(columns).where(
+        statement = select(*columns).where(
             self.model.timestamp >= params.start_time,
             self.model.timestamp <= params.end_time,
         )
@@ -97,7 +88,7 @@ class DataController:
 
             quantity = len(data_bulk_objects)
 
-            return {"message": f"{quantity} objects inserted successfully"}
+            return {"message": f"{quantity} objetos inserido com sucesso"}
 
         except Exception as error:
             session.rollback()

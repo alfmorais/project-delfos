@@ -54,6 +54,10 @@ class DataParams(BaseModel):
             "power",
             "ambient_temperature",
         ]
+
+        if columns is None:
+            return valid_columns
+
         for column in columns:
             if column not in valid_columns:
                 raise ValueError(f"Coluna invalída: {column}")

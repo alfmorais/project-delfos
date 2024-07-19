@@ -1,11 +1,14 @@
-import pytest
 from decimal import Decimal
-from sqlalchemy.exc import IntegrityError, DataError
+
+import pytest
+from sqlalchemy.exc import DataError, IntegrityError
+
 from src.api.models import Data
+from tests.factories import DataFactory
 
 
 def test_insert_valid_data(session):
-    data = Data(
+    data = DataFactory(
         timestamp=1625097600,
         wind_speed=Decimal("5.67"),
         power=Decimal("123.45"),
@@ -16,20 +19,21 @@ def test_insert_valid_data(session):
 
     assert data.id is not None
     assert isinstance(data.id, int)
+    assert str(data) == f"Data[id={data.id}, timestamp={data.timestamp}]"
 
     session.delete(data)
     session.commit()
 
 
 def test_insert_duplicate_id(session):
-    first_data = Data(
+    first_data = DataFactory(
         id=1,
         timestamp=1625097600,
         wind_speed=Decimal("5.67"),
         power=Decimal("123.45"),
         ambient_temperature=Decimal("22.5"),
     )
-    second_data = Data(
+    second_data = DataFactory(
         id=1,
         timestamp=1625097601,
         wind_speed=Decimal("6.67"),
@@ -54,7 +58,7 @@ def test_insert_duplicate_id(session):
 
 
 @pytest.mark.parametrize(
-    "data,expected_exception,expected_description_exception",
+    ("data", "expected_exception", "expected_description_exception"),
     [
         (
             Data(
@@ -86,7 +90,7 @@ def test_insert_duplicate_id(session):
         ),
     ],
 )
-def test_data_integrity(
+def test_data_integrity_error(
     session,
     data,
     expected_exception,
