@@ -8,7 +8,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.api.models import Data
-from src.api.schemas import DataBulkPayload, DataParams, DataPayload
+from src.api.schemas import (
+    DataBulkPayload,
+    DataParams,
+    DataPayload,
+)
 
 
 class DataController:
@@ -44,13 +48,10 @@ class DataController:
             self.model.timestamp >= params.start_time,
             self.model.timestamp <= params.end_time,
         )
-        data_instances = session.execute(statement).all()
+        instances = session.execute(statement).all()
 
-        response_data = [
-            dict(zip(params.columns, result)) for result in data_instances
-        ]
-        response = {"response": response_data}
-        return response
+        data = [dict(zip(params.columns, result)) for result in instances]
+        return data
 
     def delete(self, id: int, session: Session) -> Dict:
         data = session.scalar(select(self.model).where((self.model.id == id)))

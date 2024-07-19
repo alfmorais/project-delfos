@@ -1,4 +1,8 @@
+from typing import Dict
+
 from fastapi import APIRouter, Depends, status
+from fastapi_pagination import Page, paginate
+from fastapi_pagination.utils import disable_installed_extensions_check
 from sqlalchemy.orm import Session
 
 from src.api.controllers import data_controller
@@ -8,7 +12,6 @@ from src.api.schemas import (
     DataParams,
     DataPayload,
     DataResponse,
-    ListDataResponse,
 )
 from src.infrastructure.database import get_session
 
@@ -45,13 +48,14 @@ def retrieve_data(id: int, session: Session = Depends(get_session)):
 @router.get(
     "",
     status_code=status.HTTP_200_OK,
-    response_model=ListDataResponse,
+    response_model=Page[Dict],
 )
 def read_data(
     params: DataParams = Depends(),
     session: Session = Depends(get_session),
 ):
-    return data_controller.read(params, session)
+    disable_installed_extensions_check()
+    return paginate(data_controller.read(params, session))
 
 
 @router.delete(

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi_pagination import add_pagination
 
 from src.api.views import data_routers
 from src.infrastructure.server.settings import settings
@@ -19,3 +20,4 @@ class App(FastAPI):
 
 
 app = App()
+add_pagination(app)

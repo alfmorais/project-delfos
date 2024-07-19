@@ -1,3 +1,0 @@
-- Fazer testes unitários para o projeto inteiro
-- Validar os parametros que não seja menor que ZERO e datetime no endpoint de listar com filtros
-- Verififcar query do DataController Read que não está retornando nenhum objeto.

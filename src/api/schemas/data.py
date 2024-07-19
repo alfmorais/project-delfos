@@ -29,10 +29,6 @@ class DataResponseOptional(BaseModel):
     ambient_temperature: Optional[Decimal]
 
 
-class ListDataResponse(BaseModel):
-    response: List[DataResponseOptional]
-
-
 class DataMessageResponse(BaseModel):
     message: str
 
@@ -40,13 +36,14 @@ class DataMessageResponse(BaseModel):
 class DataParams(BaseModel):
     start_time: int
     end_time: int
-    columns: Optional[List[str]] = Field(
-        None,
+    columns: str = Field(
         description="List of fields to return",
+        default="id,timestamp,wind_speed,power,ambient_temperature",
+        examples="id,timestamp,wind_speed,power,ambient_temperature",
     )
 
     @field_validator("columns")
-    def validate_columns(cls, columns):
+    def validate_columns(cls, columns: str) -> List:
         valid_columns = [
             "id",
             "timestamp",
@@ -54,12 +51,12 @@ class DataParams(BaseModel):
             "power",
             "ambient_temperature",
         ]
+        formated_columns = []
 
-        if columns is None:
-            return valid_columns
-
-        for column in columns:
+        for column in columns.split(","):
             if column not in valid_columns:
                 raise ValueError(f"Coluna invalída: {column}")
 
-        return columns
+            formated_columns.append(column)
+
+        return formated_columns

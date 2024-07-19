@@ -73,7 +73,7 @@ def test_read(mock_session):
     mock_session.return_value = mock_session_instance
 
     params = DataParams(
-        columns=["timestamp", "wind_speed"],
+        columns="timestamp,wind_speed",
         start_time=1234567890,
         end_time=1234567990,
     )
@@ -83,12 +83,10 @@ def test_read(mock_session):
 
     result = data_controller.read(params, mock_session_instance)
 
-    expected_result = {
-        "response": [
-            {"timestamp": 1234567890, "wind_speed": 10.0},
-            {"timestamp": 1234567900, "wind_speed": 20.0},
-        ]
-    }
+    expected_result = [
+        {"timestamp": 1234567890, "wind_speed": 10.0},
+        {"timestamp": 1234567900, "wind_speed": 20.0},
+    ]
 
     assert result == expected_result
     mock_session_instance.execute.assert_called_once()

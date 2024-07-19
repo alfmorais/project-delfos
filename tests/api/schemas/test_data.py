@@ -11,7 +11,6 @@ from src.api.schemas.data import (
     DataPayload,
     DataResponse,
     DataResponseOptional,
-    ListDataResponse,
 )
 
 
@@ -48,7 +47,7 @@ def test_data_params_success():
     params = DataParams(
         start_time=1627898400,
         end_time=1627984800,
-        columns=["id", "timestamp"],
+        columns="id,timestamp",
     )
 
     assert params.start_time == 1627898400
@@ -62,6 +61,18 @@ def test_data_params_error():
             start_time=1627898400,
             end_time=1627984800,
             columns=["invalid_column"],
+        )
+
+    assert error.typename == "ValidationError"
+    assert issubclass(error.type, ValidationError)
+
+
+def test_data_params__invalid_error():
+    with pytest.raises(ValidationError) as error:
+        DataParams(
+            start_time=1627898400,
+            end_time=1627984800,
+            columns="invalid_column",
         )
 
     assert error.typename == "ValidationError"
@@ -126,43 +137,23 @@ def test_data_response_error():
 
 
 def test_list_data_response_success():
-    response = ListDataResponse(
-        response=[
-            DataResponseOptional(
-                id=1,
-                timestamp=1627898400,
-                wind_speed=Decimal("5.5"),
-                power=Decimal("100.5"),
-                ambient_temperature=Decimal("25.3"),
-            ),
-            DataResponseOptional(
-                id=2,
-                timestamp=1627898500,
-                wind_speed=Decimal("6.0"),
-                power=Decimal("101.0"),
-                ambient_temperature=Decimal("26.0"),
-            ),
-        ]
-    )
+    response = [
+        DataResponseOptional(
+            id=1,
+            timestamp=1627898400,
+            wind_speed=Decimal("5.5"),
+            power=Decimal("100.5"),
+            ambient_temperature=Decimal("25.3"),
+        ),
+        DataResponseOptional(
+            id=2,
+            timestamp=1627898500,
+            wind_speed=Decimal("6.0"),
+            power=Decimal("101.0"),
+            ambient_temperature=Decimal("26.0"),
+        ),
+    ]
 
-    assert len(response.response) == 2
-    assert response.response[0].id == 1
-    assert response.response[1].id == 2
-
-
-def test_list_data_response_error():
-    with pytest.raises(ValidationError) as error:
-        ListDataResponse(
-            response=[
-                {
-                    "id": "invalid id",
-                    "timestamp": "invalid timestamp",
-                    "wind_speed": "invalid decimal",
-                    "power": "invalid decimal",
-                    "ambient_temperature": "invalid decimal",
-                }
-            ]
-        )
-
-    assert error.typename == "ValidationError"
-    assert issubclass(error.type, ValidationError)
+    assert len(response) == 2
+    assert response[0].id == 1
+    assert response[1].id == 2

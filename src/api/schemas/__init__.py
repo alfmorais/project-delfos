@@ -4,7 +4,7 @@ from src.api.schemas.data import (
     DataParams,
     DataPayload,
     DataResponse,
-    ListDataResponse,
+    DataResponseOptional,
 )
 
 __all__ = [
@@ -13,5 +13,5 @@ __all__ = [
     "DataParams",
     "DataPayload",
     "DataResponse",
-    "ListDataResponse",
+    "DataResponseOptional",
 ]
