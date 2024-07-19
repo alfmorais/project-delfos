@@ -49,6 +49,8 @@ asyncio_mode = "auto"
 lint = "ruff check . && ruff check . --diff"
 format = "ruff check . --fix && ruff format ."
 test = "pytest -s -x --cov=src -vv"
+build = "docker compose build --no-cache"
+run = "docker compose up"
 
 [build-system]
 requires = ["poetry-core"]
