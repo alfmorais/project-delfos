@@ -4,7 +4,7 @@ from http import HTTPStatus
 from typing import Dict, List
 
 from fastapi import HTTPException
-from sqlalchemy import and_, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from src.api.models import Data
@@ -39,29 +39,26 @@ class DataController:
         )
 
     def read(self, params: DataParams, session: Session) -> List[Data]:
-        query = (
-            session.query(self.model)
-            .filter(
-                and_(
-                    self.model.timestamp >= params.start_time,
-                    self.model.timestamp <= params.end_time,
-                )
-            )
-            .all()
-        )
-
-        response = {
-            "response": [
-                {
-                    "id": data.id,
-                    "timestamp": data.timestamp,
-                    "wind_speed": data.wind_speed,
-                    "power": data.power,
-                    "ambient_temperature": data.ambient_temperature,
-                }
-                for data in query
+        if params.columns is None:
+            params.columns = [
+                "id",
+                "timestamp",
+                "wind_speed",
+                "power",
+                "ambient_temperature",
             ]
-        }
+
+        columns = [getattr(self.model, column) for column in params.columns]
+        statement = select(columns).where(
+            self.model.timestamp >= params.start_time,
+            self.model.timestamp <= params.end_time,
+        )
+        data_instances = session.execute(statement).all()
+
+        response_data = [
+            dict(zip(params.columns, result)) for result in data_instances
+        ]
+        response = {"response": response_data}
         return response
 
     def delete(self, id: int, session: Session) -> Dict:
